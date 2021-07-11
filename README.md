@@ -12,3 +12,4 @@ This application uses an MIT license.
 ## Application
 https://github.com/spenserlogan/team_profile_generator
 
+![](img/screenshot1.png)

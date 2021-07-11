@@ -142,7 +142,7 @@ function generatePage() {
         <title>Team Profile</title>
     </head>
     <body>
-        <nav class="navbar navbar-light bg-light mb-5">
+        <nav class="navbar navbar-dark bg-dark mb-5">
             <span class="navbar-brand mb-0 h1 w-100 text-center">Team Profile</span>
         </nav>
         <div class="container">
@@ -164,35 +164,38 @@ function addMemberPage(member) {
             const github = member.getGithub();
             data = `<div class="col-6">
             <div class="card mx-auto mb-3" style="width: 18rem">
-            <h5 class="card-header">${member.name}<br /><br />Engineer</h5>
+            <h2 class="card-header">${member.name}<br /><br />Engineer</h2>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">ID: ${member.id}</li>
                 <li class="list-group-item">Email Address: ${member.email}</li>
                 <li class="list-group-item">GitHub: ${github}</li>
             </ul>
+            </div>
         </div>`
         }else if(role === "Intern") {
             const school = member.getSchool();
             data = `<div class="col-6">
             <div class="card mx-auto mb-3" style="width: 18rem">
-            <h5 class="card-header">${member.name}<br /><br />Intern</h5>
+            <h2 class="card-header">${member.name}<br /><br />Intern</h2>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">ID: ${member.id}</li>
                 <li class="list-group-item">Email Address: ${member.email}</li>
                 <li class="list-group-item">School: ${school}</li>
             </ul>
+            </div>
         </div>`
         }else {
             console.log(member)
             const officeNum = member.getOfficeNumber();
             data = `<div class="col-6">
             <div class="card mx-auto mb-3" style="width: 18rem">
-            <h5 class="card-header">${member.name}<br /><br />Manager</h5>
+            <h2 class="card-header">${member.name}<br /><br />Manager</h2>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">ID: ${member.id}</li>
                 <li class="list-group-item">Email Address: ${member.email}</li>
                 <li class="list-group-item">Office Number: ${officeNum}</li>
             </ul>
+            </div>
         </div>`
         }
         fs.appendFile("./dist/team.html", data, function (err) {
