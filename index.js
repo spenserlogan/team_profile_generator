@@ -1,16 +1,17 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
-const path = require("path");
-
 const Engineer = require("./library/engineer");
 const Manager = require("./library/manager");
 const Intern = require("./library/intern");
-const Prompt = require("inquirer/lib/prompts/base");
 
-const manager = [];
-const engineer = [];
-const intern = [];
-const employeeArr = {engineer, intern, manager};
+let manager = [];
+let engineer = [];
+let intern = [];
+
+function initApp() {
+    questions();
+    generatePage()
+}
 
 function questions() {
     inquirer.prompt([{
@@ -40,6 +41,7 @@ function questions() {
         message: "What is the employees email?"
     }])
     .then(({name, id, role, email}) => {
+        // let newEmployee = "";
         if(role === "Engineer") {
             return inquirer.prompt([{
                 type:"input",
@@ -50,6 +52,7 @@ function questions() {
                 type: "list",
                 name: "newEmployee",
                 message: "Would you like to add a new employee?",
+                default: false,
                 choices: [
                     "yes",
                     "no"
@@ -57,9 +60,14 @@ function questions() {
             }
         ])
         .then(({github, newEmployee}) => {
-            engineer.push(new Engineer(name, id, email, github))
-            if(newEmployee) {
-                return Prompt();
+            let member = new Engineer(name, id, email, github);
+            engineer.push(member)
+            addMemberPage(member);
+            if(newEmployee === "no") {
+                return finishMemberPage();
+            }
+            else{
+                questions();
             }
         })
         } else if(role === "Intern") {
@@ -72,6 +80,7 @@ function questions() {
                 type: "list",
                 name: "newEmployee",
                 message: "Would you like to add a new employee?",
+                default: false,
                 choices: [
                     "yes",
                     "no"
@@ -79,9 +88,14 @@ function questions() {
             }
         ])
         .then(({school, newEmployee}) => {
-            engineer.push(new Intern(name, id, email, school))
-            if(newEmployee) {
-                return Prompt();
+            let member = new Intern(name, id, email, school)
+            intern.push(member)
+            addMemberPage(member);
+            if(newEmployee === "no") {
+                return finishMemberPage();
+            }
+            else{
+                questions();
             }
         })
         }else if(role === "Manager") {
@@ -94,12 +108,24 @@ function questions() {
                 type: "list",
                 name: "newEmployee",
                 message: "Would you like to add a new employee?",
+                default: false,
                 choices: [
                     "yes",
                     "no"
                 ]
             }
         ])
+        .then(({officeNum, newEmployee}) => {
+            let member = new Manager(name, id, email, officeNum)
+            manager.push(member)
+            addMemberPage(member);
+            if(newEmployee === "no") {
+                return finishMemberPage();
+            }
+            else{
+                questions();
+            }
+        })
         }
     });
 
@@ -121,56 +147,55 @@ function generatePage() {
         </nav>
         <div class="container">
             <div class="row">`;
-    fs.writeFile("./output/team.html", html, function(err) {
+    fs.writeFile("./dist/team.html", html, function(err) {
         if (err) {
             console.log(err);
         }
     });
 };
 
-function addMemberPage() {
+function addMemberPage(member) {
     return new Promise(function(resolve, reject) {
-        const name = member.getName();
-        const id = member.getId();
+        console.log("member", member)
         const role = member.getRole();
-        const email = member.getEmail();
         let data = "";
 
         if(role === "Engineer") {
             const github = member.getGithub();
             data = `<div class="col-6">
             <div class="card mx-auto mb-3" style="width: 18rem">
-            <h2 class="card-header">${name}<br /><br />Engineer</h2>
+            <h5 class="card-header">${member.name}<br /><br />Engineer</h5>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">ID: ${id}</li>
-                <li class="list-group-item">Email Address: ${email}</li>
+                <li class="list-group-item">ID: ${member.id}</li>
+                <li class="list-group-item">Email Address: ${member.email}</li>
                 <li class="list-group-item">GitHub: ${github}</li>
             </ul>
-            </div>`
+        </div>`
         }else if(role === "Intern") {
             const school = member.getSchool();
             data = `<div class="col-6">
             <div class="card mx-auto mb-3" style="width: 18rem">
-            <h2 class="card-header">${name}<br /><br />Intern</h2>
+            <h5 class="card-header">${member.name}<br /><br />Intern</h5>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">ID: ${id}</li>
-                <li class="list-group-item">Email Address: ${email}</li>
-                <li class="list-group-item">GitHub: ${school}</li>
+                <li class="list-group-item">ID: ${member.id}</li>
+                <li class="list-group-item">Email Address: ${member.email}</li>
+                <li class="list-group-item">School: ${school}</li>
             </ul>
-            </div>`
+        </div>`
         }else {
+            console.log(member)
             const officeNum = member.getOfficeNumber();
             data = `<div class="col-6">
             <div class="card mx-auto mb-3" style="width: 18rem">
-            <h2 class="card-header">${name}<br /><br />Manager</h2>
+            <h5 class="card-header">${member.name}<br /><br />Manager</h5>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">ID: ${id}</li>
-                <li class="list-group-item">Email Address: ${email}</li>
-                <li class="list-group-item">GitHub: ${officeNum}</li>
+                <li class="list-group-item">ID: ${member.id}</li>
+                <li class="list-group-item">Email Address: ${member.email}</li>
+                <li class="list-group-item">Office Number: ${officeNum}</li>
             </ul>
-            </div>`
+        </div>`
         }
-        fs.appendFile("./output/team.html", data, function (err) {
+        fs.appendFile("./dist/team.html", data, function (err) {
             if (err) {
                 return reject(err);
             };
@@ -178,3 +203,20 @@ function addMemberPage() {
         }); 
     });
 }
+
+function finishMemberPage() {
+    const html = ` </div>
+    </div>
+    
+</body>
+</html>`;
+
+    fs.appendFile("./dist/team.html", html, function (err) {
+        if (err) {
+            console.log(err);
+        };
+    });
+}
+
+
+initApp();
